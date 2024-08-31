@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreBookRequest extends FormRequest
@@ -24,5 +25,12 @@ class StoreBookRequest extends FormRequest
         return [
             //
         ];
+    }
+
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'published_at' => Carbon::parse($this->published_at)->format('Y-m-d'),
+        ]);
     }
 }
