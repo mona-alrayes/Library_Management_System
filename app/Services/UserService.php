@@ -2,18 +2,18 @@
 
 namespace App\Services;
 
+use Exception;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
-use Exception;
 
 /**
  * Class UserService
  * 
- * Handles operations related to users including CRUD operations and user registration.
+ * Handles operations related to users including CRUD operations, registration, and updates.
  */
 class UserService
 {
@@ -21,7 +21,7 @@ class UserService
      * Retrieve all users with pagination.
      * 
      * @return \Illuminate\Pagination\LengthAwarePaginator|array
-     * Returns paginated list of users with their roles or an error response.
+     * Returns a paginated list of users with their roles or an error response.
      */
     public function getAll()
     {
@@ -42,19 +42,19 @@ class UserService
     /**
      * Register a new user.
      * 
-     * @param Request $request
-     * The request object containing user registration data.
+     * @param array $data
+     * The array containing user registration data including 'name', 'email', 'password', and 'role'.
      * 
      * @return array
-     * An array containing the user resource and a newly generated JWT token, or an error response.
+     * An array containing the user resource, a JWT token, or an error response.
      * 
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function RegisterUser(Request $request): array
+    public function registerUser(array $data): array
     {
         try {
             // Ensure the role exists before proceeding
-            $role = Role::findByName($request->role);
+            $role = Role::findByName($data['role']);
 
             if (!$role) {
                 throw ValidationException::withMessages([
@@ -64,9 +64,9 @@ class UserService
 
             // Create a new user with the provided data
             $user = User::create([
-                'name' => $request->name,
-                'email' => $request->email,
-                'password' => Hash::make($request->password),
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'password' => Hash::make($data['password']),
             ]);
 
             // Assign the role to the user
@@ -95,46 +95,36 @@ class UserService
     /**
      * Update an existing user.
      * 
-     * @param Request $request
-     * The request object containing updated user data.
+     * @param array $data
+     * The array containing updated user data. The 'password' field, if present, will be hashed.
      * @param int $id
      * The ID of the user to be updated.
      * 
-     * @return array
-     * An array containing the updated user resource or an error response.
+     * @return User
+     * The updated user instance.
      * 
-     * @throws \Illuminate\Validation\ValidationException
+     * @throws \Exception
+     * Throws an exception if the user is not found or if an error occurs during the update.
      */
-    public function updateUser(Request $request, $id): array
+    public function updateUser(array $data, $id): User
     {
         try {
             // Find the user by ID or throw a 404 exception
             $user = User::findOrFail($id);
 
-            // Prepare data for update
-            $data = $request->only('name', 'email', 'password');
-
-            // Update only fields that are present in the request
+            // Update only fields that are present in the data array
             if (isset($data['password'])) {
-                $data['password'] = Hash::make($data['password']); 
+                $data['password'] = Hash::make($data['password']);
             }
 
             // Update user with the filtered data
             $user->update(array_filter($data));
 
-            // Return the updated user resource
-            return [
-                'status' => 'success',
-                'message' => 'User updated successfully.',
-                'data' => new UserResource($user),
-            ];
+            // Return the updated user instance
+            return $user;
         } catch (Exception $e) {
             // Handle any other exceptions
-            return [
-                'status' => 'error',
-                'message' => 'An error occurred during updating.',
-                'errors' => $e->getMessage(),
-            ];
+            throw new Exception('An error occurred during updating: ' . $e->getMessage());
         }
     }
 
@@ -144,29 +134,24 @@ class UserService
      * @param int $id
      * The ID of the user to be retrieved.
      * 
-     * @return array
-     * An array containing the user resource or an error response.
+     * @return User
+     * The user instance if found.
      * 
-     * @throws \Illuminate\Validation\ValidationException
+     * @throws \Exception
+     * Throws an exception if the user is not found or if an error occurs during retrieval.
      */
-    public function getUserById($id): array
+    public function getUserById($id): User
     {
         try {
             // Find the user by ID or throw a 404 exception
-            $user = User::with('roles')->findOrFail($id);
-
-            return [
-                'status' => 'success',
-                'message' => 'User retrieved successfully.',
-                'data' => new UserResource($user),
-            ];
+            $user = User::with('roles')->find($id);
+            if (!$user) {
+                throw new Exception('User not found!');
+            }
+            return $user;
         } catch (Exception $e) {
             // Handle any other exceptions
-            return [
-                'status' => 'error',
-                'message' => 'An error occurred while retrieving user.',
-                'errors' => $e->getMessage(),
-            ];
+            throw new Exception('An error occurred while retrieving the user: ' . $e->getMessage());
         }
     }
 
@@ -179,17 +164,20 @@ class UserService
      * @return array
      * An array containing a success message or an error response.
      * 
-     * @throws \Illuminate\Validation\ValidationException
+     * @throws \Exception
+     * Throws an exception if the user is not found or if an error occurs during deletion.
      */
     public function deleteUser($id): array
     {
         try {
             // Find the user by ID or throw a 404 exception
             $user = User::findOrFail($id);
-
+            if (!$user) {
+                throw new Exception('User not found!');
+            }
             // Delete the user
             $user->delete();
-            
+
             // Return a success message
             return [
                 'status' => 'success',

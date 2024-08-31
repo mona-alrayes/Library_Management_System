@@ -10,6 +10,13 @@ class StoreUserRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
+     *
+     * This method determines if the user making the request is authorized
+     * to perform this action. By default, it returns true, allowing all
+     * requests to pass authorization. Override this method to implement
+     * custom authorization logic.
+     *
+     * @return bool True if authorized, otherwise false.
      */
     public function authorize(): bool
     {
@@ -19,7 +26,11 @@ class StoreUserRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * This method returns an array of validation rules that apply to the
+     * request. Each key in the array represents an input field, and each
+     * value is an array of validation rules.
+     *
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string> Array of validation rules.
      */
     public function rules(): array
     {
@@ -31,26 +42,44 @@ class StoreUserRequest extends FormRequest
         ];
     }
 
+    /**
+     * Get the custom error messages for validation rules.
+     *
+     * This method returns an array of custom error messages for validation
+     * rules. The array keys should correspond to the validation rule names,
+     * and the values are the custom error messages.
+     *
+     * @return array<string, string> Array of custom error messages.
+     */
     public function messages(): array
     {
         return [
-            'name.required' => 'حقل Name مطلوب ',
-            'name.string' => 'Name يجب أن يكون نصا وليس اي نوع اخر',
-            'name.max' => 'عدد محارف Name لا يجب ان تتجاوز 255 محرفا',
-            'email.required' => 'Email مطلوب لا يمكن ان يكون فارغا',
-            'email.string' => 'Email يجب ان يكون بصيغة نصية',
-            'email.email' => 'حقل Email يجب ان يكون بصيغة صحيحة مثل test@example.com',
-            'email.max' => 'حقل Email يجب ان لا يتجاوز 255 محرفا ',
-            'email.unique' => 'هذا Email موجود بالفعل في بياناتنا',
-            'password.required' => 'حقل Password مطلوب',
-            'password.string' => 'حقل Password مطلوب',
-            'password.min' => 'حقل Password يجب ان يكون 8 محارف على الاقل',
-            'password.confirmed' => 'حقل تأكيد Password غير مطابق لحقل Password',
-            'role.required' => 'حقل Role مطلوب',
-            'role.exists' => 'حقل Role غير موجود في قاعدة البيانات',
+            'name.required' => 'حقل :attribute مطلوب ',
+            'name.string' => 'حقل :attribute يجب أن يكون نصا وليس اي نوع اخر',
+            'name.max' => 'عدد محارف :attribute لا يجب ان تتجاوز 255 محرفا',
+            'email.required' => 'حقل :attribute مطلوب لا يمكن ان يكون فارغا',
+            'email.string' => 'حقل :attribute يجب ان يكون بصيغة نصية',
+            'email.email' => 'حقل :attribute يجب ان يكون بصيغة صحيحة مثل test@example.com',
+            'email.max' => 'حقل :attribute يجب ان لا يتجاوز 255 محرفا ',
+            'email.unique' => 'هذا :attribute موجود بالفعل في بياناتنا',
+            'password.required' => 'حقل :attribute مطلوب',
+            'password.string' => 'حقل :attribute مطلوب',
+            'password.min' => 'حقل :attribute يجب ان يكون 8 محارف على الاقل',
+            'password.confirmed' => 'حقل تأكيد :attribute غير مطابق لحقل :attribute',
+            'role.required' => 'حقل :attribute مطلوب',
+            'role.exists' => 'حقل :attribute غير موجود في قاعدة البيانات',
         ];
     }
 
+    /**
+     * Get the custom attribute names for validator errors.
+     *
+     * This method returns an array of custom attribute names that should
+     * be used in error messages. The keys are the input field names, and
+     * the values are the custom names to be used in error messages.
+     *
+     * @return array<string, string> Array of custom attribute names.
+     */
     public function attributes(): array
     {
         return [
@@ -61,7 +90,16 @@ class StoreUserRequest extends FormRequest
         ];
     }
 
-    // Customize response on validation failure
+    /**
+     * Handle a failed validation attempt.
+     *
+     * This method is called when validation fails. It customizes the
+     * response that is returned when validation fails, including the
+     * status code and error messages.
+     *
+     * @param \Illuminate\Contracts\Validation\Validator $validator
+     * @throws \Illuminate\Http\Exceptions\HttpResponseException
+     */
     protected function failedValidation(Validator $validator)
     {
         throw new HttpResponseException(response()->json([
@@ -71,6 +109,14 @@ class StoreUserRequest extends FormRequest
         ], 422));
     }
 
+    /**
+     * Handle actions to be performed after validation passes.
+     *
+     * This method is called after validation has passed. You can use this
+     * method to modify the request data before it is processed by the controller.
+     *
+     * For example, you might want to format or modify the input data.
+     */
     protected function passedValidation()
     {
         $this->merge([

@@ -80,6 +80,7 @@ class UserController extends Controller
         ], 200); // OK
     }
 
+
     /**
      * Update the specified user in storage.
      *
@@ -99,6 +100,7 @@ class UserController extends Controller
             'user' => UserResource::make($user),
         ], 200); // OK
     }
+
 
     /**
      * Remove the specified user from storage.
