@@ -22,8 +22,8 @@ class UserSeeder extends Seeder
         $admin->assignRole('admin');
 
         // Optionally, create more users
-        // User::factory()->count(10)->create()->each(function ($user) {
-        //     $user->assignRole('user'); // Assign default role to other users
-        // });
+        User::factory()->count(10)->create()->each(function ($user) {
+            $user->assignRole('user'); // Assign default role to other users
+        });
     }
 }
