@@ -5,6 +5,7 @@ use App\Http\Controllers\BookController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\RatingController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\CategoryController;
 
 
 /*
@@ -25,10 +26,11 @@ Route::controller(AuthController::class)->group(function () {
     Route::post('refresh', 'refresh');
 });
 /**
- * User management routes with authentication and role-based access control using JWT.
+ * Admin management routes with authentication and role-based access control using JWT.
  */
 Route::group(['middleware' => ['auth:api', 'role:admin']], function () {
     Route::apiResource('users', UserController::class);
+    Route::apiResource('categories', CategoryController::class);
 });
 
 // Public routes for books
