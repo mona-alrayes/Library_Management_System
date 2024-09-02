@@ -35,6 +35,12 @@ return new class extends Migration
             // Publication date of the book
             $table->date('published_at');
 
+            $table->foreignId('category_id')
+            ->constrained('categories')
+            ->onUpdate('cascade')  // Update if the referenced book's id changes
+            ->onDelete('cascade'); // Delete borrow record if the book is deleted
+
+
             // Timestamps to automatically manage created_at and updated_at columns
             $table->timestamps();
         });

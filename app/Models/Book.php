@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Category;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Book extends Model
 {
@@ -19,6 +20,7 @@ class Book extends Model
         'author',
         'description',
         'published_at',
+        'category_id'
     ];
 
     /**
@@ -56,6 +58,18 @@ class Book extends Model
         return $this->hasMany(Rating::class);
     }
 
+    /**
+     * Get the categories associated with the book.
+     *
+     * This method defines a one-to-many relationship between the Book and Category models.
+     * Each book can have multiple ratings.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
     /**
      * Calculate the average rating for the book.
      *
