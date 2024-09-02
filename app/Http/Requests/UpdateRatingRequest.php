@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateRatingRequest extends FormRequest
 {
@@ -11,7 +12,7 @@ class UpdateRatingRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true; 
     }
 
     /**
@@ -22,7 +23,26 @@ class UpdateRatingRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'rating' => 'sometimes|integer|between:1,5',
+            'review' => 'sometimes|string|max:2000',
+            // Ensure the book exists
+            'book_id' => [
+                'required',
+                'integer',
+                Rule::exists('books', 'id'),
+            ],
         ];
+    }
+
+    /**
+     * Prepare the data for validation.
+     */
+    protected function prepareForValidation()
+    {
+        // Set the movie_id from the route
+        $this->merge([
+            'book_id' => $this->route('bookId'),
+            'user_id' => auth()->id(),
+        ]);
     }
 }

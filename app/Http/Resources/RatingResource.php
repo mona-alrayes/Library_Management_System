@@ -10,10 +10,20 @@ class RatingResource extends JsonResource
     /**
      * Transform the resource into an array.
      *
+     * @param \Illuminate\Http\Request $request
      * @return array<string, mixed>
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return [
+            'rating' => $this->rating,
+            'review' => $this->review,
+            'book_title' => $this->whenLoaded('book', function() {
+                return $this->book->title; 
+            }),
+            'user_name' => $this->whenLoaded('user', function() {
+                return $this->user->name;     
+            }),
+        ];
     }
 }
