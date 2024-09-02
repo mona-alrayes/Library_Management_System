@@ -24,14 +24,20 @@ class BookService
     public function getAllBooks(Request $request): array
     {
         // Create a query builder instance for the Book model
-        //$query = Book::with('ratings');
-        $query = Book::query();
+        $query = Book::with('category');
+        // $query = Book::query();
 
         // Apply filters based on request parameters
+        //filter by author name
         $query->when($request->author, function ($q, $author) {
             return $q->where('author', $author);
         });
-
+        //filter by category name
+        $query->when($request->category_name, function ($q, $category){
+            return $q->whereHas('category', function ($q) use ($category) {
+                $q->where('name', $category);
+            });
+        });
         // Apply sorting if specified
         if ($request->sort_by) {
             $sortOrder = $request->sort_order ?? 'asc';
