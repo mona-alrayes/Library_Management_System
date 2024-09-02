@@ -23,13 +23,21 @@ class BookController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $booksWithRatings = $this->bookService->getAllBooks($request);
+        $books = $this->bookService->getAllBooks($request);
+
         return response()->json([
             'status' => 'success',
             'message' => 'Books retrieved successfully',
-            'books' => BookResource::collection($booksWithRatings),
+            'data' => [
+                'books' => BookResource::collection($books['data']), // Only the book items
+                'current_page' => $books['current_page'],
+                'last_page' => $books['last_page'],
+                'per_page' => $books['per_page'],
+                'total' => $books['total'],
+            ],
         ], 200); // OK
     }
+
 
     /**
      * Store a newly created resource in storage.

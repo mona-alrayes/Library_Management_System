@@ -24,7 +24,8 @@ class BookService
     public function getAllBooks(Request $request): array
     {
         // Create a query builder instance for the Book model
-        $query = Book::with('ratings');
+        //$query = Book::with('ratings');
+        $query = Book::query(); // Use query() instead of all()
 
         // Apply filters based on request parameters
         $query->when($request->author, function ($q, $author) {
@@ -116,7 +117,7 @@ class BookService
      * @throws \Exception
      * Throws an exception if the book is not found or update fails.
      */
-    public function updateBook(array $data, string $id): array
+    public function updateBook(array $data, string $id): Book
     {
         // Find the book by ID or fail if not found
         $book = Book::findOrFail($id);
@@ -125,7 +126,7 @@ class BookService
         $book->update(array_filter($data));
 
         // Return the updated book as an array
-        return $book->toArray();
+        return $book;
     }
 
     /**

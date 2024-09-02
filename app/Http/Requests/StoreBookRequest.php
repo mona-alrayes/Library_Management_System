@@ -25,9 +25,9 @@ class StoreBookRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' => ['required', 'string', 'max:255'],
-            'author' => ['required', 'string', 'max:255'],
-            'published_at' => ['required', 'date', 'date_format:Y-m-d'],
+            'title' => ['required','string','min:3','max:255' , 'unique:books,title'],
+            'author' => ['required','string','min:3','max:255'],
+            'published_at' => ['required', 'date'],
             'description' => ['nullable', 'string'],
         ];
     }
@@ -36,13 +36,16 @@ class StoreBookRequest extends FormRequest
         return [
             'title.required' => 'حقل :attribute مطلوب ',
             'title.string' => 'حقل :attribute يجب أن يكون نصا وليس اي نوع اخر',
+            'title.min' => 'عدد محارف :attribute لا يجب ان يقل عن 3 محارف',
             'title.max' => 'عدد محارف :attribute لا يجب ان تتجاوز 255 محرفا',
+            'title.unique'=> 'لا يمكن تكرار :attribute , هذا الكتاب موجود بالفعل في بياناتنا',
             'author.required' => 'حقل :attribute مطلوب ',
             'author.string' => 'حقل :attribute يجب أن يكون نصا وليس اي نوع اخر',
+            'author.min' => 'عدد محارف :attribute لا يجب ان يقل عن 3 محارف',
             'author.max' => 'عدد محارف :attribute لا يجب ان تتجاوز 255 محرفا',
             'published_at.required' =>'حقل :attribute يجب ان يكون تاريخا',
             'published_at.date' => 'حقل :attribute يجب ان يكون تاريخا صحيحا',
-            'published_at.date_format' => 'حقل :attribute يجب أن يكون تاريخا بالصيغة YYYY-MM-DD',
+            'published_at.date_format' => 'حقل :attribute يجب أن يكون تاريخا بالصيغة DD-MM-YYYY',
             'description.string' => 'حقل :attribute يجب أن يكون نصا ',
         ];
     }
@@ -50,7 +53,7 @@ class StoreBookRequest extends FormRequest
     {
         return [
             'title' => 'عنوان الكتاب',
-            'author' => 'البريد الالكتروني',
+            'author' => 'الكاتب',
             'description' => 'الوصف',
             'published_at' => 'تاريخ النشر'
         ];
@@ -58,7 +61,7 @@ class StoreBookRequest extends FormRequest
     protected function prepareForValidation()
     {
         $this->merge([
-            'published_at' => Carbon::parse($this->published_at)->format('Y-m-d'),
+            'published_at' => Carbon::parse($this->published_at)->format('d-m-Y'),
         ]);
     }
 
@@ -73,7 +76,10 @@ class StoreBookRequest extends FormRequest
     protected function passedValidation()
     {
         $this->merge([
-            'title' => strtolower($this->input('title')),
+            'title' => ucwords(strtolower($this->input('title'))),
+            'author' => ucwords(strtolower($this->input('author'))),
+            'description' => ucwords(strtolower($this->input('description'))),
+
         ]);
     }
 }

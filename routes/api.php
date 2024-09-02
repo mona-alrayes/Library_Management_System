@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\BookController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Api\AuthController;
 
@@ -28,3 +29,34 @@ Route::controller(AuthController::class)->group(function () {
 Route::group(['middleware' => ['auth:api', 'role:admin']], function () {
     Route::apiResource('users', UserController::class);
 });
+
+Route::group(['middleware' => ['auth:api', 'role:admin']], function () {
+
+    /**
+     * Store a new Book.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    Route::post('books', [BookController::class, 'store']);
+
+    /**
+     * Update an existing book.
+     *
+     * @param \App\Models\Book $book
+     * @return \Illuminate\Http\JsonResponse
+     */
+    Route::put('books/{book}', [BookController::class, 'update']);
+
+    /**
+     * Delete a book.
+     *
+     * @param \App\Models\Book $book
+     * @return \Illuminate\Http\JsonResponse
+     */
+    Route::delete('books/{book}', [BookController::class, 'destroy']);
+});
+
+// Public routes for books
+Route::apiResource('books', BookController::class)
+    // Exclude store, update, and destroy methods from apiResource routes
+    ->except('store', 'update', 'destroy');
