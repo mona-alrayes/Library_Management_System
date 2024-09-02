@@ -20,6 +20,7 @@ class BookResource extends JsonResource
             'author' => $this->author,
             'published_at' => $this->published_at,
             'description' => $this->description,
+            'category_name'=>$this->category->name,
             'ratings' => RatingResource::collection($this->ratings ?: collect([])), // Ensure empty array if no ratings
             'average_rating' => $this->averageRating(),
         ];

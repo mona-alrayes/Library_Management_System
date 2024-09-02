@@ -24,13 +24,7 @@ class UpdateCategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => [
-                'sometimes',
-                'string',
-                'min:3',
-                'max:255',
-                'unique:categories,name,' . $this->route('category'),
-            ],
+            'name' => ['sometimes','string','min:3','max:255','unique:categories,name,',],
         ];
     }
 
