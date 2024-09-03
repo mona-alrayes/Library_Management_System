@@ -91,6 +91,22 @@ class StoreUserRequest extends FormRequest
     }
 
     /**
+     * Handle actions to be performed before validation passes.
+     *
+     * This method is called before validation performed . You can use this
+     * method to modify the request data before it is processed by the controller.
+     *
+     * For example, you might want to format or modify the input data.
+     */
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'name' => ucwords(strtolower($this->input('name'))),
+        ]);
+    }
+
+
+    /**
      * Handle a failed validation attempt.
      *
      * This method is called when validation fails. It customizes the
@@ -119,8 +135,8 @@ class StoreUserRequest extends FormRequest
      */
     protected function passedValidation()
     {
-        $this->merge([
-            'name' => strtolower($this->input('name')),
-        ]);
+        // $this->merge([
+        //     'name' => strtolower($this->input('name')),
+        // ]);
     }
 }
