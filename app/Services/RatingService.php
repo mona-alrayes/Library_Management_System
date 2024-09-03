@@ -28,7 +28,7 @@ class RatingService
      * @throws Exception
      * Throws an exception if the rating creation fails.
      */
-    public function storeRating(array $data): array
+    public function storeRating(array $data): Rating
     {
         try {
             // Create a new rating using the provided data
@@ -42,8 +42,8 @@ class RatingService
             // Load related data (book and user) for the rating
             $rating->load(['book', 'user']);
 
-            // Return the created rating as a resource array
-            return RatingResource::make($rating)->toArray(request());
+            // Return the created rating as object
+            return $rating;
         } catch (Throwable $e) {
             // Log the error and rethrow it
             Log::error('Failed to create rating: ' . $e->getMessage());

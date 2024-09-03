@@ -49,7 +49,7 @@ class RatingController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Rating created successfully',
-            'book' => $rating,
+            'book' => RatingResource::make($rating),
         ], 201); // Created
     }
 
