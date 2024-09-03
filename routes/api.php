@@ -6,6 +6,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\RatingController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\BorrowRecordController;
 
 
 /*
@@ -90,4 +91,10 @@ Route::group(['middleware' => ['auth:api', 'role:user']], function () {
      * @return \Illuminate\Http\JsonResponse
      */
     Route::delete('/books/{bookId}/rating', [RatingController::class, 'destroy']);
+
+    Route::post('/books/{bookId}/borrow_records', [BorrowRecordController::class, 'store']);
+    Route::put('/books/{bookId}/borrow_records/{id}', [BorrowRecordController::class, 'update']);
+    Route::delete('/books/{bookId}/borrow_records/{id}',[BorrowRecordController::class, 'destroy']);
+
+
 });

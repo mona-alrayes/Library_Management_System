@@ -33,6 +33,18 @@ class BorrowRecord extends Model
         'returned_at' => 'datetime',
     ];
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Listen for the creating event
+        static::creating(function ($borrowBook) {
+            // Automatically set the user_id to the currently authenticated user
+            if (is_null($borrowBook->user_id)) {
+            $borrowBook->user_id = auth()->id();
+            }
+        });
+    }
     /**
      * Get the user that borrowed the book.
      *
@@ -70,5 +82,11 @@ class BorrowRecord extends Model
     public function isReturned()
     {
         return !is_null($this->returned_at);
+    }
+
+    public function returnBook()
+    {
+        $this->returned_at = null;
+        $this->save();
     }
 }

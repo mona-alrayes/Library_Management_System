@@ -33,9 +33,15 @@ class BookService
             return $q->where('author', $author);
         });
         //filter by category name
-        $query->when($request->category_name, function ($q, $category){
+        $query->when($request->category_name, function ($q, $category) {
             return $q->whereHas('category', function ($q) use ($category) {
                 $q->where('name', $category);
+            });
+        });
+        // Apply filter for available books only if 'available' is passed as a query parameter and set to 'true'
+        $query->when($request->has('available') && $request->available == 'true', function ($q) {
+            $q->whereDoesntHave('borrowRecords', function ($q) {
+                $q->whereNotNull('returned_at');
             });
         });
         // Apply sorting if specified
@@ -71,7 +77,7 @@ class BookService
      */
     public function storeBook(array $data): Book
     {
-         $book = Book::create($data);
+        $book = Book::create($data);
 
         // Check if the book was created successfully
         if (!$book) {

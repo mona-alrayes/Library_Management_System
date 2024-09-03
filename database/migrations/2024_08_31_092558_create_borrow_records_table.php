@@ -35,11 +35,9 @@ return new class extends Migration
 
             // Date when the book was borrowed
             $table->date('borrowed_at');
-
-            // Date by which the book should be returned
-            $table->date('due_date');
-
-            // Date when the book was returned, nullable because it might not be returned yet
+            //set null till user return the book 
+            $table->date('due_date')->nullable();
+            // has date = borrowed_at + 14 days till user return the book then it becomes null 
             $table->date('returned_at')->nullable();
 
         });

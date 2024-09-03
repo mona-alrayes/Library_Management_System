@@ -58,13 +58,13 @@ class RatingController extends Controller
      *
      * @param UpdateRatingRequest $request
      * Validated request data for updating a rating.
-     * @param int $movieId
+     * @param int $BookId
      * The ID of the movie (book) to be updated.
      *
      * @return JsonResponse
      * A JSON response containing the updated rating or an error message.
      */
-    public function update(UpdateRatingRequest $request, $movieId): JsonResponse
+    public function update(UpdateRatingRequest $request, $BookId): JsonResponse
     {
         // Get validated data from the request
         $validatedData = $request->validated();
@@ -73,7 +73,7 @@ class RatingController extends Controller
         $userId = auth()->id();
 
         // Call the service to update the rating and return the result
-        $updatedRating = $this->ratingService->updateRating($validatedData, $movieId, $userId);
+        $updatedRating = $this->ratingService->updateRating($validatedData, $BookId, $userId);
 
         // Respond with the updated rating and success message
         return response()->json([
@@ -86,19 +86,19 @@ class RatingController extends Controller
     /**
      * Remove the specified rating from storage.
      *
-     * @param int $movieId
+     * @param int $BookId
      * The ID of the movie (book) to be deleted.
      *
      * @return JsonResponse
      * A JSON response indicating success or failure.
      */
-    public function destroy($movieId): JsonResponse
+    public function destroy($BookId): JsonResponse
     {
         // Get the ID of the authenticated user
         $userId = auth()->id();
 
         // Call the service to delete the rating
-        $this->ratingService->deleteRating($movieId, $userId);
+        $this->ratingService->deleteRating($BookId, $userId);
 
         // Respond with a success message
         return response()->json([
