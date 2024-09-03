@@ -5,16 +5,17 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
-use Illuminate\Validation\Rule;
 
 class UpdateUserRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
+     *
+     * @return bool
      */
     public function authorize(): bool
     {
-        return true;
+        return true; // Authorization logic can be added here if needed
     }
 
     /**
@@ -28,34 +29,38 @@ class UpdateUserRequest extends FormRequest
 
         return [
             'name' => ['nullable', 'string', 'max:255'],
-            'email' => [
-                'nullable',
-                'string',
-                'email',
-                'max:255',
-                Rule::unique('users')->ignore($userId) // Ensure the email is unique except for the current user
-            ],
+            'email' => ['nullable', 'string', 'email', 'max:255', 'unique:users,email,' . $userId,],
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
-            'role' => ['nullable', 'string', 'exists:roles,name'], // Validate role name if provided
+            'role' => ['nullable', 'string', 'exists:roles,name'],
         ];
     }
 
+    /**
+     * Get the custom error messages for the validator.
+     *
+     * @return array<string, string>
+     */
     public function messages(): array
     {
         return [
-            'name.string' => 'Name يجب أن يكون نصا وليس اي نوع اخر',
-            'name.max' => 'عدد محارف Name لا يجب ان تتجاوز 255 محرفا',
-            'email.string' => 'Email يجب ان يكون بصيغة نصية',
-            'email.email' => 'حقل Email يجب ان يكون بصيغة صحيحة مثل test@example.com',
-            'email.max' => 'حقل Email يجب ان لا يتجاوز 255 محرفا',
-            'email.unique' => 'هذا Email موجود بالفعل في بياناتنا',
-            'password.string' => 'حقل Password مطلوب',
-            'password.min' => 'حقل Password يجب ان يكون 8 محارف على الاقل',
-            'password.confirmed' => 'حقل تأكيد Password غير مطابق لحقل Password',
-            'role.exists' => 'حقل Role غير موجود في قاعدة البيانات',
+            'name.string' => 'حقل :attribute يجب أن يكون نصا وليس أي نوع آخر',
+            'name.max' => 'عدد محارف :attribute لا يجب أن يتجاوز 255 محرفا',
+            'email.string' => 'حقل :attribute يجب أن يكون نصا',
+            'email.email' => 'حقل :attribute يجب أن يكون بصيغة صحيحة مثل test@example.com',
+            'email.max' => 'حقل :attribute يجب أن لا يتجاوز 255 محرفا',
+            'email.unique' => 'هذا :attribute موجود بالفعل في بياناتنا',
+            'password.string' => 'حقل :attribute يجب أن يكون نصا',
+            'password.min' => 'حقل :attribute يجب أن يكون 8 محارف على الأقل',
+            'password.confirmed' => 'حقل تأكيد :attribute غير مطابق لحقل :attribute',
+            'role.exists' => 'حقل :attribute غير موجود في قاعدة البيانات',
         ];
     }
 
+    /**
+     * Get custom attribute names for error messages.
+     *
+     * @return array<string, string>
+     */
     public function attributes(): array
     {
         return [
@@ -66,7 +71,29 @@ class UpdateUserRequest extends FormRequest
         ];
     }
 
-    // Customize response on validation failure
+
+    /**
+     * Handle actions to be performed before validation passes.
+     *
+     * This method is called before validation performed . You can use this
+     * method to modify the request data before it is processed by the controller.
+     *
+     * For example, you might want to format or modify the input data.
+     */
+    protected function prepareForValidation()
+    {
+        if ($this->has('name')) {
+            $this->merge([
+                'name' => ucwords(strtolower($this->input('name'))),
+            ]);
+        }
+    }
+    /**
+     * Handle a failed validation attempt.
+     *
+     * @param \Illuminate\Contracts\Validation\Validator $validator
+     * @throws \Illuminate\Http\Exceptions\HttpResponseException
+     */
     protected function failedValidation(Validator $validator)
     {
         throw new HttpResponseException(response()->json([
@@ -76,13 +103,17 @@ class UpdateUserRequest extends FormRequest
         ], 422));
     }
 
+    /**
+     * Modify the data after validation passes.
+     *
+     * @return void
+     */
     protected function passedValidation()
     {
-        // Optionally modify data after validation
-        if ($this->has('name')) {
-            $this->merge([
-                'name' => strtolower($this->input('name')),
-            ]);
-        }
+        // if ($this->has('name')) {
+        //     $this->merge([
+        //         'name' => strtolower($this->input('name')), // Optionally format the name to lowercase
+        //     ]);
+        // }
     }
 }
