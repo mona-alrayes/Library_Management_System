@@ -1,3 +1,77 @@
+# Movie Library Project
+
+## Description
+This project is a ** Book Library Management System ** built with **Laravel 10** that provides a **RESTful API**f for managing books and Borrowing them . It allows users to perform **CRUD operations** ( Read, show ) on books , with the ability to filter books by **Author** and **Category** and **Avalibality of the book** sort them by **published_at** (ascending and descending), or apply both filtering and sorting simultaneously it also  allow users to perform **CRUD operations** on BorrowRecords , allow Admin to perform **CRUD operations** on books like (create and update and delete) , it also Allow the Admin to perform **CRUD operations** on Category and Users . The system Has **JWT Authentication** for ( Register , login , logout , refresh) and **Spatie for Roles** as we have 2 Roles (admin , user)  . The project follows **repository design patterns** and incorporates **clean code** and **refactoring principles**.
+
+### Key Features:
+- **CRUD Operations**: Create, read, update, and delete books in the Book library.
+- **CRUD Operations**: Create, read, update, and delete Users in the Book library.
+- **CRUD Operations**: Create, read, update, and delete categories in the library.
+- **CRUD Operations**: Create, read, update, and delete rating in the Book library.
+- **CRUD Operations**: Create, read, update, and delete BorrowRecords in the Book library.
+- **Filtering and Sorting**: Filter books by author, Category of the book and by Avalibilty of the book , sort them by published_at , or do all.
+- **Repository Design Pattern**: Implements repositories and services for clean separation of concerns.
+- **Form Requests**: Validation is handled by custom form request classes.
+- **API Response Service**: Unified responses for API endpoints.
+- **Pagination**: Results are paginated for better performance and usability.
+- **Resources**: API responses are formatted using Laravel resources for a consistent structure.
+- **Seeders**: Populate the database with initial data for testing and development.
+
+### Technologies Used:
+- **Laravel 10**
+- **PHP**
+- **MySQL**
+- **XAMPP** (for local development environment)
+- **Composer** (PHP dependency manager)
+- **Postman Collection**: Contains all API requests for easy testing and interaction with the API.
+
+---
+
+## Installation
+
+### Prerequisites
+
+Ensure you have the following installed on your machine:
+- **XAMPP**: For running MySQL and Apache servers locally.
+- **Composer**: For PHP dependency management.
+- **PHP**: Required for running Laravel.
+- **MySQL**: Database for the project
+- **Postman**: Required for testing the requestes.
+
+### Steps to Run the Project
+
+1. Clone the Repository  
+   ```bash
+   git clone https://github.com/mona-alrayes/Library_Management_System.git
+2. Navigate to the Project Directory
+   ```bash
+   cd Library_Management_System
+3. Install Dependencies
+   ```bash
+   composer install
+4. Create Environment File
+   ```bash
+   cp .env.example .env
+   Update the .env file with your database configuration (MySQL credentials, database name, etc.).
+5. Generate Application Key
+    ```bash
+    php artisan key:generate
+6. Run Migrations
+    ```bash
+    php artisan migrate
+7. Run this command to generate JWT Secret
+   php artisan jwt:secret
+   
+8. Seed the Database
+    ```bash
+    php artisan db:seed
+9. Run the Application
+    ```bash
+    php artisan serve
+10. Interact with the API and test the various endpoints via Postman collection 
+    Get the collection from here: https://documenter.getpostman.com/view/34416184/2sAXjNXr1D
+
+
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
 <p align="center">
