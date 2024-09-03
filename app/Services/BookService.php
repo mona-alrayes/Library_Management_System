@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Models\Book;
 use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Exception;
 
 /**
  * Class BookService
@@ -23,44 +25,47 @@ class BookService
      */
     public function getAllBooks(Request $request): array
     {
-        // Create a query builder instance for the Book model
-        $query = Book::with('category');
-        // $query = Book::query();
+        try {
+            // Create a query builder instance for the Book model
+            $query = Book::with('category');
 
-        // Apply filters based on request parameters
-        //filter by author name
-        $query->when($request->author, function ($q, $author) {
-            return $q->where('author', $author);
-        });
-        //filter by category name
-        $query->when($request->category_name, function ($q, $category) {
-            return $q->whereHas('category', function ($q) use ($category) {
-                $q->where('name', $category);
+            // Apply filters based on request parameters
+            $query->when($request->author, function ($q, $author) {
+                return $q->where('author', $author);
             });
-        });
-        // Apply filter for available books only if 'available' is passed as a query parameter and set to 'true'
-        $query->when($request->has('available') && $request->available == 'true', function ($q) {
-            $q->whereDoesntHave('borrowRecords', function ($q) {
-                $q->whereNotNull('returned_at');
+            // Apply filter based on category name
+            $query->when($request->category_name, function ($q, $category) {
+                return $q->whereHas('category', function ($q) use ($category) {
+                    $q->where('name', $category);
+                });
             });
-        });
-        // Apply sorting if specified
-        if ($request->sort_by) {
-            $sortOrder = $request->sort_order ?? 'asc';
-            $query->orderBy($request->sort_by, $sortOrder);
+            // Filter books and brings only avaliable books
+            $query->when($request->has('available') && $request->available == 'true', function ($q) {
+                $q->whereDoesntHave('borrowRecords', function ($q) {
+                    $q->whereNotNull('returned_at');
+                });
+            });
+
+            // Apply sorting if specified
+            if ($request->sort_by) {
+                $sortOrder = $request->sort_order ?? 'asc';
+                $query->orderBy($request->sort_by, $sortOrder);
+            }
+
+            // Paginate the results
+            $books = $query->paginate(5);
+
+            // Return the paginated books as an array
+            return [
+                'data' => $books->items(), // the items on the current page
+                'current_page' => $books->currentPage(),
+                'last_page' => $books->lastPage(),
+                'per_page' => $books->perPage(),
+                'total' => $books->total(),
+            ];
+        } catch (Exception $e) {
+            throw new Exception('Failed to retrieve books: ' . $e->getMessage());
         }
-
-        // Paginate the results
-        $books = $query->paginate(5);
-
-        // Return the paginated books as an array
-        return [
-            'data' => $books->items(), // the items on the current page
-            'current_page' => $books->currentPage(),
-            'last_page' => $books->lastPage(),
-            'per_page' => $books->perPage(),
-            'total' => $books->total(),
-        ];
     }
 
     /**
@@ -69,23 +74,25 @@ class BookService
      * @param array $data
      * An associative array containing 'title', 'author', 'published_at', and 'description'.
      * 
-     * @return array
-     * An array containing the created book resource.
+     * @return Book
+     * The created book resource.
      * 
      * @throws \Exception
      * Throws an exception if the book creation fails.
      */
     public function storeBook(array $data): Book
     {
-        $book = Book::create($data);
+        try {
+            $book = Book::create($data);
 
-        // Check if the book was created successfully
-        if (!$book) {
-            throw new \Exception('Failed to create the book.');
+            if (!$book) {
+                throw new Exception('Failed to create the book.');
+            }
+
+            return $book;
+        } catch (Exception $e) {
+            throw new Exception('Book creation failed: ' . $e->getMessage());
         }
-
-        // Return the created book
-        return $book;
     }
 
     /**
@@ -94,50 +101,51 @@ class BookService
      * @param int $id
      * The ID of the book to retrieve.
      * 
-     * @return array
-     * An array containing the book resource.
+     * @return Book
+     * The book resource.
      * 
      * @throws \Exception
      * Throws an exception if the book is not found.
      */
     public function showBook(int $id): Book
     {
-        // Find the book by ID
-        $book = Book::find($id);
-
-        // If no book is found, throw an exception
-        if (!$book) {
-            throw new \Exception('Book not found.');
+        try {
+            $book = Book::findOrFail($id);
+            return $book;
+        } catch (ModelNotFoundException $e) {
+            throw new Exception('Book not found: ' . $e->getMessage());
+        } catch (Exception $e) {
+            throw new Exception('Failed to retrieve book: ' . $e->getMessage());
         }
-
-        // Return the found book as an array
-        return $book;
     }
 
     /**
      * Update an existing book.
      * 
-     * @param Request $request
-     * The request object containing the fields to update.
+     * @param array $data
+     * The data array containing the fields to update.
      * @param string $id
      * The ID of the book to update.
      * 
-     * @return array
-     * An array containing the updated book resource.
+     * @return Book
+     * The updated book resource.
      * 
      * @throws \Exception
      * Throws an exception if the book is not found or update fails.
      */
     public function updateBook(array $data, string $id): Book
     {
-        // Find the book by ID or fail if not found
-        $book = Book::findOrFail($id);
+        try {
+            $book = Book::findOrFail($id);
 
-        // Update only the fields that are provided in the data array
-        $book->update(array_filter($data));
+            $book->update(array_filter($data));
 
-        // Return the updated book as an array
-        return $book;
+            return $book;
+        } catch (ModelNotFoundException $e) {
+            throw new Exception('Book not found: ' . $e->getMessage());
+        } catch (Exception $e) {
+            throw new Exception('Failed to update book: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -154,12 +162,16 @@ class BookService
      */
     public function deleteBook(string $id): string
     {
-        // Find the book by ID or fail if not found
-        $book = Book::findOrFail($id);
+        try {
+            $book = Book::findOrFail($id);
 
-        // Delete the book
-        $book->delete();
+            $book->delete();
 
-        return "Book deleted successfully.";
+            return "Book deleted successfully.";
+        } catch (ModelNotFoundException $e) {
+            throw new Exception('Book not found: ' . $e->getMessage());
+        } catch (Exception $e) {
+            throw new Exception('Failed to delete book: ' . $e->getMessage());
+        }
     }
 }
