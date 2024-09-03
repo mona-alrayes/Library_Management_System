@@ -22,9 +22,7 @@ class BorrowRecordController extends Controller
      */
     public function index()
     {
-        $borrowRecords = BorrowRecord::with(['book', 'user'])->paginate(10);
-
-        return BorrowRecordsResource::collection($borrowRecords);
+       
     }
 
     /**
@@ -47,7 +45,6 @@ class BorrowRecordController extends Controller
      */
     public function show(BorrowRecord $borrowRecord)
     {
-        return BorrowRecordsResource::make($borrowRecord->load(['book', 'user']));
 
     }
 

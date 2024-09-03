@@ -63,7 +63,7 @@ class BorrowRecordsService
                 throw new Exception('The Borrow Record does not Exist !.');
             } else {
                 $borrowRecord->update(array_filter($data));
-               // $borrowRecord->update($data);
+                // $borrowRecord->update($data);
                 return $borrowRecord;
             }
         } catch (Throwable $e) {
@@ -84,12 +84,12 @@ class BorrowRecordsService
     public function ReturnBook(string $id): string
     {
         try {
-        $BorrowedBook = BorrowRecord::findOrFail($id);
-        $BorrowedBook->due_date = now();
-        $BorrowedBook->returned_at = null;
-        $BorrowedBook->save();
-        return "Book returned successfully.";
-        }catch (Exception $e) {
+            $BorrowedBook = BorrowRecord::findOrFail($id);
+            $BorrowedBook->due_date = now();
+            $BorrowedBook->returned_at = null;
+            $BorrowedBook->save();
+            return "Book returned successfully.";
+        } catch (Exception $e) {
             Log::error('Error returning book: ' . $e->getMessage());
             throw $e;
         }
