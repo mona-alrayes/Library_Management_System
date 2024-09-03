@@ -79,6 +79,9 @@ class StoreBookRequest extends FormRequest
             $this->merge([
                 'category_id' => $category->id, // Add the category_id to the request data
                 'published_at' => Carbon::parse($this->published_at)->format('d-m-Y'),
+                'title' => ucwords(strtolower($this->input('title'))),
+                'author' => ucwords(strtolower($this->input('author'))),
+                'description' => ucwords(strtolower($this->input('description'))),
             ]);
         } else {
             throw new HttpResponseException(response()->json([
@@ -101,9 +104,9 @@ class StoreBookRequest extends FormRequest
     protected function passedValidation()
     {
         $this->merge([
-            'title' => ucwords(strtolower($this->input('title'))),
-            'author' => ucwords(strtolower($this->input('author'))),
-            'description' => ucwords(strtolower($this->input('description'))),
+            // 'title' => ucwords(strtolower($this->input('title'))),
+            // 'author' => ucwords(strtolower($this->input('author'))),
+            // 'description' => ucwords(strtolower($this->input('description'))),
         ]);
     }
 }
