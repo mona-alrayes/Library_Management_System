@@ -1,4 +1,4 @@
-# Movie Library Project
+# Book Library Management System  Project
 
 ## Description
 This project is a ** Book Library Management System ** built with **Laravel 10** that provides a **RESTful API**f for managing books and Borrowing them . It allows users to perform **CRUD operations** ( Read, show ) on books , with the ability to filter books by **Author** and **Category** and **Avalibality of the book** sort them by **published_at** (ascending and descending), or apply both filtering and sorting simultaneously it also  allow users to perform **CRUD operations** on BorrowRecords , allow Admin to perform **CRUD operations** on books like (create and update and delete) , it also Allow the Admin to perform **CRUD operations** on Category and Users . The system Has **JWT Authentication** for ( Register , login , logout , refresh) and **Spatie for Roles** as we have 2 Roles (admin , user)  . The project follows **repository design patterns** and incorporates **clean code** and **refactoring principles**.
