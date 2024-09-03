@@ -60,15 +60,16 @@ Ensure you have the following installed on your machine:
     ```bash
     php artisan migrate
 7. Run this command to generate JWT Secret
+   ```bash
    php artisan jwt:secret
    
-8. Seed the Database
+9. Seed the Database
     ```bash
     php artisan db:seed
-9. Run the Application
+10. Run the Application
     ```bash
     php artisan serve
-10. Interact with the API and test the various endpoints via Postman collection 
+11. Interact with the API and test the various endpoints via Postman collection 
     Get the collection from here: https://documenter.getpostman.com/view/34416184/2sAXjNXr1D
 
 
