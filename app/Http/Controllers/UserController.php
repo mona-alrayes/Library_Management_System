@@ -52,9 +52,9 @@ class UserController extends Controller
      */
     public function store(StoreUserRequest $request)
     {
+        
         $validatedData = $request->validated();
         $user_information = $this->userService->RegisterUser($validatedData);
-
         return response()->json([
             'status' => 'success',
             'message' => 'User created successfully',

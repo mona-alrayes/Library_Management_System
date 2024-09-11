@@ -66,7 +66,8 @@ class UserService
             $user = User::create([
                 'name' => $data['name'],
                 'email' => $data['email'],
-                'password' => Hash::make($data['password']),
+                // 'password' => Hash::make($data['password']),
+                'password' => $data['password'],
             ]);
 
             // Assign the role to the user

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
@@ -135,8 +136,23 @@ class StoreUserRequest extends FormRequest
      */
     protected function passedValidation()
     {
-        // $this->merge([
-        //     'name' => strtolower($this->input('name')),
-        // ]);
+         $this->merge([
+            'password' => Hash::make($this->input('password'),)
+         ]);
     }
+
+    public function validated($key=null,$default=null): array
+    {
+        $validatedData = parent::validated();
+        $validatedData['password'] = Hash::make($validatedData['password']);
+
+        return $validatedData;
+    }
+
+    public function ValidationWithHasing(){
+        return $this->safe()->merge([
+            'password' => Hash::make('password') ,
+        ]);
+    }
+
 }
